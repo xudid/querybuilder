@@ -1,10 +1,10 @@
 <?php
 
 
-namespace QueryBuilder;
+namespace Xudid\QueryBuilder\Request;
 
 
-class DBRequest
+class Litteral
 {
     public function query() : string
     {
