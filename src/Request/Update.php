@@ -1,13 +1,13 @@
 <?php
 
-
 namespace Xudid\QueryBuilder\Request;
 
-
+use Xudid\QueryBuilderContracts\Request\RequestInterface;
+use Xudid\QueryBuilderContracts\Request\UpdateInterface;
 use Xudid\QueryBuilder\Request\traits\HasJoin;
 use Xudid\QueryBuilder\Request\traits\HasWhere;
 
-class Update
+class Update implements RequestInterface, UpdateInterface
 {
     use HasWhere;
     use HasJoin;
@@ -22,14 +22,14 @@ class Update
         $this->table = $table;
     }
 
-    public function set(string $column, $value) : Update
+    public function set(string $column, $value) : static
     {
         $this->sets[$column] =  $value;
         $this->binded[$column] = $value;
         return $this;
     }
 
-    public function query(): string
+    public function toPreparedSql() : string
     {
         $query = str_replace('%table%', $this->table, self::$updatePattern);
         $query .=$this->joinsToString();
@@ -39,7 +39,7 @@ class Update
         return $query;
     }
 
-    public function getBinded()
+    public function getBindings(): array
     {
         return $this->binded;
     }
@@ -56,5 +56,10 @@ class Update
             }
         }
         return $sets;
+    }
+
+    public function toSql(): string
+    {
+       return '';
     }
 }

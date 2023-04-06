@@ -4,6 +4,8 @@
 namespace Xudid\QueryBuilder\Request;
 
 use Exception;
+use Xudid\QueryBuilderContracts\Request\RequestInterface;
+use Xudid\QueryBuilderContracts\Request\SelectInterface;
 use Xudid\QueryBuilder\Request\traits\HasFrom;
 use Xudid\QueryBuilder\Request\traits\HasJoin;
 use Xudid\QueryBuilder\Request\traits\HasWhere;
@@ -12,7 +14,7 @@ use Xudid\QueryBuilder\Request\traits\HasWhere;
  * Class Select
  * @package QueryBuilder
  */
-class Select
+class Select implements RequestInterface, SelectInterface
 {
     use HasFrom;
     use HasWhere;
@@ -23,7 +25,7 @@ class Select
     private static string $havingVerb = 'HAVING';
     private static string $orderByVerb = 'ORDER BY';
     private $selctetFields = [];
-    private $binded = [];
+    private array $binded = [];
     private bool $distinct = false;
     private string $groupBy = '';
     private string $having = '';
@@ -39,27 +41,30 @@ class Select
         } else {
             $this->selctetFields = '*';
         }
-
     }
 
-    public function distinct() : Select
+    public function distinct() : static
     {
         $this->distinct = true;
         return $this;
     }
 
-    public function groupBy(string $fieldName): Select
+    public function groupBy(string $fieldName): static
     {
         $this->groupBy = $fieldName;
         return $this;
     }
 
-    public function having(string $havingCondition)
+    public function having(string $havingCondition): static
     {
         $this->having = $havingCondition;
+        return $this;
     }
 
-    public function orderBy($field, $direction = 'ASC')
+    /**
+     * @throws Exception
+     */
+    public function orderBy($field, $direction = 'ASC'): static
     {
         if (!in_array($direction, ['ASC', 'DESC'])) {
             throw new Exception('Order By Exception invalid direction');
@@ -68,18 +73,18 @@ class Select
         return $this;
     }
 
-    public function limit($limit)
+    public function limit($limit): static
     {
         $this->limit = $limit;
         return $this;
     }
 
-    public function getBinded()
+    public function getBindings(): array
     {
         return $this->binded;
     }
 
-    public function query() : string
+    public function toPreparedSql() : string
     {
         $query = self::$selectVerb . ' ';
         $query .= $this->distinctToString();
@@ -133,8 +138,6 @@ class Select
 
     private function orderByToString()
     {
-        // si plusieurs champs et ASC on ne précise pas la direction les champs sont séparés par une virgule
-        // sinon on fait field direction, otherfield otherdirection
         if (!$this->orderBys) {
             return '';
         }
@@ -163,5 +166,10 @@ class Select
         }
 
         return ' LIMIT ' . $this->limit;
+    }
+
+    public function toSql(): string
+    {
+       return '';
     }
 }

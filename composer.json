@@ -20,5 +20,8 @@
 
     "scripts": {
         "test" : "vendor/bin/phpunit"
+    },
+    "require": {
+        "xudid/querybuildercontracts": ">=0.0.0.1"
     }
 }

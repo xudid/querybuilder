@@ -4,17 +4,17 @@
 namespace Xudid\QueryBuilder\Request;
 
 
+use Xudid\QueryBuilderContracts\Request\DeleteInterface;
+use Xudid\QueryBuilderContracts\Request\RequestInterface;
 use Xudid\QueryBuilder\Request\traits\HasFrom;
 use Xudid\QueryBuilder\Request\traits\HasJoin;
 use Xudid\QueryBuilder\Request\traits\HasWhere;
 
-class Delete
+class Delete implements RequestInterface, DeleteInterface
 {
     use HasFrom;
     use HasWhere;
     use HasJoin;
-
-    const TYPE = 'DELETE';
 
     private static string $requestVerb = 'DELETE';
     private array $binded = [];
@@ -24,12 +24,12 @@ class Delete
         $this->from(...$tables);
     }
 
-    public function getBinded()
+    public function getBindings(): array
     {
         return $this->binded;
     }
 
-    public function query() : string
+    public function toPreparedSql() : string
     {
         return self::$requestVerb .
             ' ' .
@@ -39,5 +39,10 @@ class Delete
             $this->wheresToString() .
             ' ' .
             ';';
+    }
+
+    public function toSql(): string
+    {
+        return '';
     }
 }

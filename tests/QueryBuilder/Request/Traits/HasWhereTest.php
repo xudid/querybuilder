@@ -22,7 +22,7 @@ class HasWhereTest extends TestCase
         $request->from('test')
             ->where('a', '=', 1)
             ->where('b', '=', 2);
-        $binded = $request->getBinded();
+        $binded = $request->getBindings();
         $this->assertIsArray($binded);
         $this->assertCount(2, $binded);
         $this->assertArrayHasKey('a', $binded);
